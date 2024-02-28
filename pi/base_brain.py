@@ -8,6 +8,19 @@ def update_boom(change_angle):
 def update_rudder(change_angle):
     #send data to arduino to update position
     print()
+
+def calculate_boom_angle(wind_direction,heading): # finds semi optimal sail angle
+    sail_bearing = (wind_direction + heading) / 2
+    if sail_bearing > 90:
+        sail_bearing = 180 - sail_bearing
+    return sail_bearing
+
+def find_wind_direction():
+    #temp add with stuff later
+    wind_direction = int(input("enter wind direction as compass heading"))
+    return wind_direction
+
+
     
 def calculate_bearing(current_lat, current_long, waypoint_lat, waypoint_long):
     # Calculate the angle (azimuth) between the two coordinates
@@ -80,8 +93,11 @@ while True: # primary thought loop
 
     turn_angle = calculate_bearing(current_lat, current_long, waypoint_lat, waypoint_long)
     print(f"You need to take the heading {turn_angle:.2f} degrees.")
-
-
+    wind_direction=find_wind_direction()
+    print("The wind direction is ",wind_direction)
+    print("turn angle is ",turn_angle)
+    boom_angle = calculate_boom_angle(wind_direction,turn_angle)
+    print("boom should be at",boom_angle)
     desired_direction=turn_angle
     change_needed = calculate_compass_change(current_direction, desired_direction)
     print(f"Change needed: {change_needed} degrees")
