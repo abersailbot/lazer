@@ -1,0 +1,86 @@
+#include <Servo.h>
+
+void Ruder_Mover(int RudderInt) {
+  //Rudder_CENTRE = 60;
+  //Rudder_LEFT = 130;
+  //Rudder_RIGHT = 0;
+  if (RudderInt > 130) {
+    return 130;
+  } else if (RudderInt < 0) {
+    return 0;
+  } else {
+    return RudderInt;
+  }
+}
+
+float angle = 0;
+float AngleInp = 0;
+int RudderInt = 0;
+int chooser;
+
+int Boom_Mover(int AngleInp) {
+  if (AngleInp > 90) {
+    return (800 / 1890.0) * 180.0 / 100 * 90;
+  } else if (AngleInp < 0) {
+    return (800 / 1890.0) * 180.0 / 100 * 0;
+  } else {
+    return (800 / 1890.0) * 180.0 / 100 * AngleInp;
+  }
+}
+
+Servo Rudder;
+Servo Boom;
+
+
+
+
+
+void setup() {
+  Serial.begin(9600);
+
+  //0 is a rugg 90degre angle
+  Boom.attach(9);
+
+  Rudder.attach(5);
+  angle = 0;
+  //angle = (angle / 1890.0) * 180.0;
+  angle = (700 / 1890.0) * 180.0 / 100 * angle;
+
+  Serial.print("boutta turn to angle ");
+  Serial.println(angle);
+
+  Boom.write(angle);
+  Rudder.write(60);
+  Serial.println("Starting moveing");
+}
+//angle = (800 / 1890.0) * 180.0 / 100 * AngleInp;
+
+void loop() {
+
+  Serial.println("choose either the boom or the rudder");
+  while (!Serial.available()) {
+  }
+  chooser = Serial.parseInt();
+
+  if (chooser == 0) {
+    Serial.print("boutta turn the Boom to angle ");
+    while (!Serial.available()) {
+    }
+    AngleInp = Serial.parseInt();
+
+    Serial.println(AngleInp);
+
+    Boom.write(Boom_Mover(AngleInp));
+  }
+
+  else if (chooser == 1){
+    Serial.println("boutta turn the Rudder to angle ");
+    while (!Serial.available()) {
+    }
+    RudderInt = Serial.parseInt();
+    Rudder.write(RudderInt);
+    Serial.print("Rudder move to ");
+    Serial.println(RudderInt);
+
+  }
+}
