@@ -1,3 +1,8 @@
+/*****************************************
+*   CMPS12 Serial example for Arduino    *
+*        By James Henderson, 2014        * 
+*****************************************/
+
 #include <SoftwareSerial.h>
 
 #define CMPS_GET_ANGLE8 0x12
