@@ -7,7 +7,7 @@ class WindSensor(object):
     @staticmethod
     def getWindDirectionAsDeg() -> float:
 
-        
+        #Create table of values of resistance and angle of wind_direction_sensor and return that value
         
         return float(0)
     
