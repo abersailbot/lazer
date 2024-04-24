@@ -1,6 +1,7 @@
 import math
 from wind_direction_sensor import WindSensor
 from tabulate import tabulate
+import global_pos
 
 def update_boom(change_angle):
     #send data to arduino to update position
@@ -51,7 +52,9 @@ def calculate_compass_change(current_direction, desired_direction):
 
 def get_gps_loc():
     #this part of the code does not exist yet so temp values are in use
-    return 53.4663, -2.5942
+    lat,long=global_pos.gps_loc()
+    print("lat and long are ",lat,long)
+    return lat, long
 
 def current_waypoint(waypoints_lat,waypoints_long,current_waypoint_number):
     required_proximity=5 # in m the minimum closeness you need to be from the waypoint to move to the next waypoint
