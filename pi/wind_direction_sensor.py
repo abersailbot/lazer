@@ -13,7 +13,7 @@ class WindSensor(object):
     
     @staticmethod
     def ValidateNumber(valueToValidate: float, lowerBound: float, upperBound: float) -> bool:
-        if (valueToValidate < upperBound and valueToValidate > upperBound):
+        if (valueToValidate < upperBound and valueToValidate > lowerBound):
             return True
         
         return False
