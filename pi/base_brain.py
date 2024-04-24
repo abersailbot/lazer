@@ -1,4 +1,5 @@
 import math
+from wind_direction_sensor import WindSensor
 from tabulate import tabulate
 
 def update_boom(change_angle):
@@ -16,12 +17,11 @@ def calculate_boom_angle(wind_direction,heading): # finds semi optimal sail angl
     return sail_bearing
 
 def find_wind_direction():
-    #temp add with stuff later
+    #return WindSensor.getWindDirectionAsDeg()
+    # ^ not yet working
     wind_direction = int(input("enter wind direction as compass heading"))
     return wind_direction
 
-
-    
 def calculate_bearing(current_lat, current_long, waypoint_lat, waypoint_long):
     # Calculate the angle (azimuth) between the two coordinates
     delta_lat = waypoint_lat - current_lat
