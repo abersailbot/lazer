@@ -1,0 +1,144 @@
+#include <Servo.h>
+
+
+/*
+Code written by Alex Pinkney moving the servos for boom and rudder
+the compass code was by James Henderson, 2014 
+
+*/
+
+#include <SoftwareSerial.h>
+
+#define CMPS_GET_ANGLE8 0x12
+#define CMPS_GET_ANGLE16 0x13
+#define CMPS_GET_PITCH 0x14
+#define CMPS_GET_ROLL 0x15
+
+SoftwareSerial CMPS12 = SoftwareSerial(2,3);
+
+unsigned char high_byte, low_byte, angle8;
+char pitch, roll;
+unsigned int angle16;
+
+float angle = 0;
+float AngleInp = 0;
+int RudderInt = 0;
+int chooser;
+
+void Ruder_Mover(int RudderInt) {
+  //Rudder_CENTRE = 60;
+  //Rudder_LEFT = 130;
+  //Rudder_RIGHT = 0;
+  if (RudderInt > 130) {
+    return 130;
+  } else if (RudderInt < 0) {
+    return 10;
+  } else {
+    return RudderInt;
+  }
+}
+
+int Boom_Mover(int AngleInp) {
+  if (AngleInp > 90) {
+    return (700 / 1890.0) * 180.0 / 100 * 90;
+  } else if (AngleInp < 0) {
+    return (700 / 1890.0) * 180.0 / 100 * 0;
+  } else {
+    return (700 / 1890.0) * 180.0 / 100 * AngleInp;
+  }
+}
+
+float getFullAngle() {
+  CMPS12.begin(9600);
+
+  CMPS12.write(CMPS_GET_ANGLE16);
+    // Request and read 16 bit angle
+  
+  while(CMPS12.available() < 2);
+  high_byte = CMPS12.read();
+  low_byte = CMPS12.read();
+  angle16 = high_byte;                // Calculate 16 bit angle
+  angle16 <<= 8;
+  angle16 += low_byte;
+  return angle16 / 10.0;
+  
+}
+
+void printData() {
+  Serial.print("roll: ");            // Display roll data
+  Serial.print(roll, DEC);
+  
+  Serial.print("    pitch: ");          // Display pitch data
+  Serial.print(pitch, DEC);
+  
+  Serial.print("    angle full: ");       // Display 16 bit angle with decimal place
+  Serial.print(getFullAngle(), DEC);
+  Serial.print(".");
+  Serial.print(angle16 % 10, DEC);
+  
+  Serial.print("    angle 8: ");        // Display 8bit angle
+  Serial.println(angle8, DEC);
+}
+
+Servo Rudder;
+Servo Boom;
+
+void setup() {
+  Serial.begin(9600);
+  
+  //0 is a rugg 90degre angle
+  Boom.attach(9);
+
+  Rudder.attach(5);
+  angle = 0;
+  //angle = (angle / 1890.0) * 180.0;
+  angle = (700 / 1890.0) * 180.0 / 100 * angle;
+
+  Serial.print("boutta turn to angle ");
+  Serial.println(angle);
+
+  Boom.write(angle);
+  Rudder.write(60);
+  Serial.println("Starting moveing");
+}
+//angle = (800 / 1890.0) * 180.0 / 100 * AngleInp;
+
+void loop() {
+
+  Serial.println("choose either the boom or the rudder");
+  
+  while (!Serial.available()) {
+  }
+  chooser = Serial.parseInt();
+
+  if (chooser == 0) {
+    Serial.print("boutta turn the Boom to angle ");
+    
+    while (!Serial.available()) {
+    }
+
+    AngleInp = Serial.parseInt();
+
+    Serial.println(AngleInp);
+
+    Boom.write(Boom_Mover(AngleInp));
+  }
+
+  else if (chooser == 1){
+    
+    Serial.println("boutta turn the Rudder to angle ");
+    
+    while (!Serial.available()) {
+    }
+    RudderInt = Serial.parseInt();
+    Rudder.write(RudderInt);
+    Serial.print("Rudder move to ");
+    Serial.println(RudderInt);
+
+  }
+  else{
+    Serial.println(getFullAngle());
+  }
+
+  Serial.println(getFullAngle());
+}
