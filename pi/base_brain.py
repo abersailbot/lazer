@@ -1,5 +1,5 @@
 import math
-from wind_direction_sensor import WindSensor
+#from wind_direction_sensor import WindSensor
 from tabulate import tabulate
 import global_pos
 
@@ -51,7 +51,6 @@ def calculate_compass_change(current_direction, desired_direction):
     return compass_change
 
 def get_gps_loc():
-    #this part of the code does not exist yet so temp values are in use
     lat,long=global_pos.gps_loc()
     print("lat and long are ",lat,long)
     return lat, long
