@@ -2,14 +2,25 @@ import math
 #from wind_direction_sensor import WindSensor
 from tabulate import tabulate
 import global_pos
+import servo
 
 def update_boom(change_angle):
     #send data to arduino to update position
     print()
     
 def update_rudder(change_angle):
-    #send data to arduino to update position
-    print()
+    print("data receved")
+    print(change_angle)
+    if change_angle <-5: # checks if left turn needed with 10 degree margin of error
+        servo.servopos(130)
+        print("left turn taken")
+    elif change_angle >5:# checks if right turn needed with 10 degree margin of error
+        servo.servopos(0)
+        print("right turn taken")
+    else:#if not within those margins keep strait
+        servo.servopos(60)
+        print("rudder returned to strait")
+
 
 def calculate_boom_angle(wind_direction,heading): # finds semi optimal sail angle
     sail_bearing = (wind_direction + heading) / 2
@@ -50,6 +61,18 @@ def calculate_compass_change(current_direction, desired_direction):
 
     return compass_change
 
+'''def headding_adjust(compass_change):
+    print("here")
+    compass_current=int(input("enter current compass headding"))
+    if compass_current >= (compass_change-10) and compass_current <= (compass_change+10):#checking if it is within acceptable margins 
+        print("within acceptable margins no change")
+        update_rudder(int(60))#sets rudder to strait on
+    elif compass_current > compass_change: # if greater turn right
+        update_rudder(int(0))
+    else :#if right turn not needed then left turn
+        update_rudder(int(130))
+old code does not work '''  
+
 def get_gps_loc():
     lat,long=global_pos.gps_loc()
     print("lat and long are ",lat,long)
@@ -87,7 +110,9 @@ current_waypoint_number=0
 
 while True: # primary thought loop
     # gps stuff
-    current_lat, current_long = get_gps_loc()
+    #current_lat, current_long = get_gps_loc()
+    current_lat = 10
+    current_long = 10
     waypoint_lat, waypoint_long , current_waypoint_number = current_waypoint(waypoints_lat,waypoints_long,current_waypoint_number)
     current_direction = float(input("enter current heading"))
 
@@ -103,4 +128,4 @@ while True: # primary thought loop
     desired_direction=turn_angle
     change_needed = calculate_compass_change(current_direction, desired_direction)
     print(f"Change needed: {change_needed} degrees")
-    update_rudder(change_needed) # upodates the rudder to take new hedding
+    update_rudder(change_needed) # updates the rudder to take new hedding
